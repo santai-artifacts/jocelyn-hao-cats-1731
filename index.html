@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whisker World — Discover Cat Breeds</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FFF8F2;
+      --card-bg: #FFFFFF;
+      --hero-bg: #FFE8D6;
+      --primary: #C4714B;
+      --primary-dark: #A0522D;
+      --secondary: #E8B89A;
+      --accent: #F0A877;
+      --text: #3D1F0F;
+      --text-muted: #7A5040;
+      --border: #F0DDD0;
+      --shadow: rgba(196,113,75,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,248,242,0.93);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem; font-weight: 700;
+      color: var(--primary-dark); text-decoration: none;
+      display: flex; align-items: center; gap: 0.45rem;
+    }
+    .nav-links { display: flex; list-style: none; gap: 2rem; }
+    .nav-links a {
+      text-decoration: none; color: var(--text-muted);
+      font-size: 0.9rem; letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #FFE8D6 0%, #FFF2E8 55%, #F6E6DA 100%);
+      padding: 6rem 2rem 5rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -40%; left: -15%;
+      width: 55%; height: 190%;
+      background: radial-gradient(circle, rgba(240,168,119,0.2) 0%, transparent 68%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -25%; right: -8%;
+      width: 45%; height: 140%;
+      background: radial-gradient(circle, rgba(196,113,75,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-icon {
+      font-size: 3.5rem; display: block; margin-bottom: 1rem;
+      animation: sway 3.5s ease-in-out infinite;
+      position: relative; z-index: 1;
+    }
+    @keyframes sway {
+      0%,100% { transform: rotate(-6deg); }
+      50%      { transform: rotate(6deg); }
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700;
+      color: var(--text); line-height: 1.2; margin-bottom: 1.2rem;
+      position: relative; z-index: 1;
+    }
+    .hero h1 em { color: var(--primary); font-style: italic; }
+    .hero p {
+      font-size: 1.1rem; color: var(--text-muted);
+      max-width: 520px; margin: 0 auto 2.5rem;
+      line-height: 1.75; position: relative; z-index: 1;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary); color: white;
+      text-decoration: none;
+      padding: 0.85rem 2.2rem; border-radius: 50px;
+      font-size: 0.95rem; font-weight: 700; letter-spacing: 0.04em;
+      border: none; cursor: pointer;
+      box-shadow: 0 4px 18px rgba(196,113,75,0.32);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      position: relative; z-index: 1;
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 22px rgba(196,113,75,0.42);
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: var(--primary);
+      padding: 1.1rem 2rem;
+      display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+    }
+    .stat-item {
+      color: white; font-size: 0.88rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .stat-item strong { font-weight: 700; }
+
+    /* ── BREEDS SECTION ── */
+    .breeds-section {
+      max-width: 1200px; margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .eyebrow {
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--primary); margin-bottom: 0.6rem;
+    }
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700;
+      color: var(--text); line-height: 1.2; margin-bottom: 0.9rem;
+    }
+    .section-header p {
+      font-size: 1rem; color: var(--text-muted);
+      max-width: 460px; margin: 0 auto; line-height: 1.7;
+    }
+
+    /* ── FILTER TABS ── */
+    .filter-tabs {
+      display: flex; justify-content: center;
+      gap: 0.55rem; margin-bottom: 3rem; flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 0.48rem 1.2rem; border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: transparent; color: var(--text-muted);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.82rem; font-weight: 700;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .filter-tab:hover, .filter-tab.active {
+      border-color: var(--primary);
+      background: var(--primary); color: white;
+    }
+
+    /* ── BREED GRID ── */
+    .breed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+    }
+
+    /* ── BREED CARD ── */
+    .breed-card {
+      background: var(--card-bg);
+      border-radius: 20px; overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 14px var(--shadow);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .breed-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 14px 36px rgba(196,113,75,0.22);
+    }
+    .card-img-wrap {
+      width: 100%; height: 220px;
+      background: var(--hero-bg);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      font-size: 4rem;
+    }
+    .card-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .card-body { padding: 1.5rem; }
+    .breed-origin {
+      font-size: 0.73rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--primary); margin-bottom: 0.35rem;
+    }
+    .breed-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--text); margin-bottom: 0.55rem; line-height: 1.2;
+    }
+    .affection-row {
+      display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.9rem;
+    }
+    .stars { display: flex; gap: 2px; }
+    .star { font-size: 0.82rem; color: var(--accent); }
+    .star.empty { color: var(--border); }
+    .affection-label { font-size: 0.73rem; color: var(--text-muted); }
+    .breed-desc {
+      font-size: 0.88rem; color: var(--text-muted);
+      line-height: 1.68; margin-bottom: 1.1rem;
+    }
+    .trait-tags { display: flex; flex-wrap: wrap; gap: 0.38rem; margin-bottom: 1.1rem; }
+    .tag {
+      padding: 0.24rem 0.72rem;
+      background: var(--hero-bg); border-radius: 50px;
+      font-size: 0.73rem; font-weight: 700;
+      color: var(--primary-dark); letter-spacing: 0.03em;
+    }
+    .card-meta {
+      display: flex; gap: 1rem;
+      padding-top: 1rem; border-top: 1px solid var(--border);
+    }
+    .meta-item { display: flex; flex-direction: column; gap: 0.12rem; }
+    .meta-label {
+      font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+    .meta-value { font-size: 0.82rem; color: var(--text); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center; padding: 4rem 2rem;
+    }
+    .empty-state span { font-size: 3rem; display: block; margin-bottom: 1rem; }
+    .empty-state p { color: var(--text-muted); font-size: 1rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text);
+      color: rgba(255,248,242,0.75);
+      text-align: center; padding: 3rem 2rem;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--secondary); margin-bottom: 0.6rem;
+    }
+    footer p { font-size: 0.85rem; line-height: 1.7; max-width: 380px; margin: 0 auto; }
+    .footer-paws { margin-top: 1.4rem; font-size: 1.3rem; opacity: 0.4; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 1rem; }
+      .nav-links { display: none; }
+      .hero { padding: 4rem 1.25rem 3.5rem; }
+      .stats-bar { gap: 1.2rem; padding: 1rem 1.25rem; }
+      .breeds-section { padding: 3rem 1rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-icon { animation: none; }
+      .breed-card:hover { transform: none; }
+      .btn-primary:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">🐾 Whisker World</a>
+    <ul class="nav-links">
+      <li><a href="#breeds">Breeds</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="hero-icon">🐱</span>
+    <h1>Discover the <em>World of Cats</em></h1>
+    <p>From silky Persians to adventurous Bengals — every breed has its own story, personality, and irresistible charm.</p>
+    <a href="#breeds" class="btn-primary">Explore Breeds ↓</a>
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-item">🐾 <span><strong>70+</strong> Recognized Breeds</span></div>
+    <div class="stat-item">😺 <span><strong>600M+</strong> Cats Worldwide</span></div>
+    <div class="stat-item">❤️ <span><strong>38%</strong> of US Homes Have Cats</span></div>
+    <div class="stat-item">🏠 <span>Domesticated <strong>10,000</strong> Years Ago</span></div>
+  </div>
+
+  <!-- BREEDS -->
+  <section class="breeds-section" id="breeds">
+    <div class="section-header">
+      <div class="eyebrow">Feline Companions</div>
+      <h2>Popular Cat Breeds</h2>
+      <p>Each breed brings its own character — discover which one speaks to your heart.</p>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="filterBreeds('all', this)">All Breeds</button>
+      <button class="filter-tab" onclick="filterBreeds('affectionate', this)">Affectionate</button>
+      <button class="filter-tab" onclick="filterBreeds('playful', this)">Playful</button>
+      <button class="filter-tab" onclick="filterBreeds('calm', this)">Calm</button>
+    </div>
+
+    <div class="breed-grid" id="breedGrid"></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="about">
+    <div class="footer-logo">🐾 Whisker World</div>
+    <p>A cozy corner of the internet dedicated to celebrating the wonder, grace, and gentle mischief of cats everywhere.</p>
+    <div class="footer-paws">🐾 🐾 🐾</div>
+  </footer>
+
+  <script>
+    const breeds = [
+      {
+        name: 'Persian',
+        origin: 'Iran',
+        emoji: '🤍',
+        description: 'The quintessential lap cat — calm, gentle, and deeply loving. Their luxuriant coats and serene demeanor make them a timeless favorite.',
+        traits: ['Affectionate', 'Calm', 'Gentle'],
+        coat: 'Long & Silky',
+        lifespan: '12–17 yrs',
+        size: 'Medium',
+        affection: 5,
+        tags: ['affectionate', 'calm'],
+        img: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=400&h=280&q=80',
+      },
+      {
+        name: 'Maine Coon',
+        origin: 'USA',
+        emoji: '🦁',
+        description: 'Gentle giants of the cat world — friendly, playful, and sociable. They love water, learn tricks, and get along beautifully with kids and dogs.',
+        traits: ['Playful', 'Friendly', 'Intelligent'],
+        coat: 'Semi-Long',
+        lifespan: '12–15 yrs',
+        size: 'Large',
+        affection: 4,
+        tags: ['playful', 'affectionate'],
+        img: 'https://images.unsplash.com/photo-1615789591457-74a63395c990?auto=format&fit=crop&w=400&h=280&q=80',
+      },
+      {
+        name: 'Siamese',
+        origin: 'Thailand',
+        emoji: '💙',
+        description: 'One of the oldest breeds — famously vocal, curious, and devoted. They form deep bonds with their humans and love to join every activity.',
+        traits: ['Vocal', 'Social', 'Curious'],
+        coat: 'Short & Sleek',
+        lifespan: '15–20 yrs',
+        size: 'Medium',
+        affection: 5,
+        tags: ['affectionate', 'playful'],
+        img: 'https://images.unsplash.com/photo-1555685812-4b943f1cb0eb?auto=format&fit=crop&w=400&h=280&q=80',
+      },
+      {
+        name: 'British Shorthair',
+        origin: 'United Kingdom',
+        emoji: '🪆',
+        description: 'Calm, self-assured, and endlessly charming. The British Shorthair is like a plush teddy bear come to life — sturdy, sweet-natured, and wonderfully low-key.',
+        traits: ['Calm', 'Easy-going', 'Loyal'],
+        coat: 'Dense & Plush',
+        lifespan: '12–20 yrs',
+        size: 'Medium-Large',
+        affection: 4,
+        tags: ['calm', 'affectionate'],
+        img: 'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=400&h=280&q=80',
+      },
+      {
+        name: 'Bengal',
+        origin: 'USA',
+        emoji: '🐆',
+        description: 'Wild at heart but devoted at home — Bengals are athletic, energetic, and strikingly beautiful. Their leopard-like spots are matched only by their adventurous spirit.',
+        traits: ['Active', 'Confident', 'Athletic'],
+        coat: 'Short & Spotted',
+        lifespan: '12–16 yrs',
+        size: 'Medium',
+        affection: 3,
+        tags: ['playful'],
+        img: 'https://images.unsplash.com/photo-1518791841217-8f162f1912da?auto=format&fit=crop&w=400&h=280&q=80',
+      },
+      {
+        name: 'Ragdoll',
+        origin: 'USA',
+        emoji: '☁️',
+        description: 'True to their name, Ragdolls go limp with contentment when held. Placid, sociable, and deeply affectionate — perfect for families who want a cuddly companion.',
+        traits: ['Gentle', 'Docile', 'Affectionate'],
+        coat: 'Semi-Long',
+        lifespan: '12–17 yrs',
+        size: 'Large',
+        affection: 5,
+        tags: ['calm', 'affectionate'],
+        img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&h=280&q=80',
+      },
+      {
+        name: 'Scottish Fold',
+        origin: 'Scotland',
+        emoji: '🎀',
+        description: 'Instantly recognizable by their sweetly folded ears and wide round eyes. Scottish Folds are playful yet calm, adapting easily to families and singles alike.',
+        traits: ['Sweet', 'Adaptable', 'Curious'],
+        coat: 'Short to Long',
+        lifespan: '11–15 yrs',
+        size: 'Medium',
+        affection: 4,
+        tags: ['calm', 'playful'],
+        img: 'https://images.unsplash.com/photo-1548247416-ec66f4900b2e?auto=format&fit=crop&w=400&h=280&q=80',
+      },
+      {
+        name: 'Abyssinian',
+        origin: 'Ethiopia',
+        emoji: '✨',
+        description: 'One of the most ancient and athletic breeds — always in motion, leaping, exploring, and investigating every corner. They live life with irresistible curiosity.',
+        traits: ['Active', 'Curious', 'Playful'],
+        coat: 'Short & Ticked',
+        lifespan: '9–15 yrs',
+        size: 'Medium',
+        affection: 3,
+        tags: ['playful'],
+        img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=400&h=280&q=80',
+      },
+    ];
+
+    function stars(n) {
+      return Array.from({length: 5}, (_, i) =>
+        `<span class="star ${i < n ? '' : 'empty'}">★</span>`
+      ).join('');
+    }
+
+    function renderCards(filter) {
+      const grid = document.getElementById('breedGrid');
+      const list = filter === 'all' ? breeds : breeds.filter(b => b.tags.includes(filter));
+
+      if (!list.length) {
+        grid.innerHTML = `<div class="empty-state"><span>🐾</span><p>No breeds match that filter.</p></div>`;
+        return;
+      }
+
+      grid.innerHTML = list.map(b => `
+        <article class="breed-card">
+          <div class="card-img-wrap">
+            <img src="${b.img}" alt="${b.name} cat"
+              loading="lazy"
+              onerror="this.parentElement.innerHTML='<span style=\\"font-size:4rem\\">${b.emoji}</span>'">
+          </div>
+          <div class="card-body">
+            <div class="breed-origin">${b.origin}</div>
+            <h3 class="breed-name">${b.name}</h3>
+            <div class="affection-row">
+              <div class="stars">${stars(b.affection)}</div>
+              <span class="affection-label">Affection level</span>
+            </div>
+            <p class="breed-desc">${b.description}</p>
+            <div class="trait-tags">
+              ${b.traits.map(t => `<span class="tag">${t}</span>`).join('')}
+            </div>
+            <div class="card-meta">
+              <div class="meta-item">
+                <span class="meta-label">Coat</span>
+                <span class="meta-value">${b.coat}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Lifespan</span>
+                <span class="meta-value">${b.lifespan}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Size</span>
+                <span class="meta-value">${b.size}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function filterBreeds(filter, btn) {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      renderCards(filter);
+    }
+
+    renderCards('all');
+  </script>
+</body>
+</html>
